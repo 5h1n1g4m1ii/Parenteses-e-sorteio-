@@ -1,0 +1,89 @@
+1 - 
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definição da estrutura da pilha
+typedef struct Node {
+    char data;
+    struct Node* next;
+} Node;
+
+typedef struct Stack {
+    Node* top;
+} Stack;
+
+// Função para criar uma nova pilha vazia
+Stack* createStack() {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->top = NULL;
+    return stack;
+}
+
+// Função para verificar se a pilha está vazia
+int isEmpty(Stack* stack) {
+    return stack->top == NULL;
+}
+
+// Função para empilhar um elemento na pilha
+void push(Stack* stack, char data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = stack->top;
+    stack->top = newNode;
+}
+
+// Função para desempilhar um elemento da pilha
+void pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Erro: pilha vazia.\n");
+        return;
+    }
+    Node* temp = stack->top;
+    stack->top = stack->top->next;
+    free(temp);
+}
+
+// Função para verificar se os parênteses correspondem corretamente
+int checkParentheses(const char* expression) {
+    Stack* stack = createStack();
+    int i = 0;
+
+    while (expression[i] != '\0') {
+        if (expression[i] == '(' || expression[i] == '[' || expression[i] == '{') {
+            push(stack, expression[i]);
+        } else if (expression[i] == ')' || expression[i] == ']' || expression[i] == '}') {
+            if (isEmpty(stack)) {
+                free(stack);
+                return 0; // Parêntese de fechamento sem correspondência
+            }
+            char top = stack->top->data;
+            if ((expression[i] == ')' && top == '(') ||
+                (expression[i] == ']' && top == '[') ||
+                (expression[i] == '}' && top == '{')) {
+                pop(stack);
+            } else {
+                free(stack);
+                return 0; // Parêntese de fechamento incorreto
+            }
+        }
+        i++;
+    }
+
+    int result = isEmpty(stack); // Verifica se há parênteses de abertura sem correspondência
+    free(stack);
+    return result;
+}
+
+int main() {
+    char expression[100];
+    printf("Digite a expressao matematica: ");
+    fgets(expression, sizeof(expression), stdin);
+
+    if (checkParentheses(expression)) {
+        printf("Os parenteses correspondem corretamente.\n");
+    } else {
+        printf("Os parenteses nao correspondem corretamente.\n");
+    }
+
+    return 0;
+}
