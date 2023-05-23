@@ -90,3 +90,131 @@ int main() {
 
 2----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Definição da estrutura da pilha
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+typedef struct Stack {
+    Node* top;
+} Stack;
+
+// Função para criar uma nova pilha vazia
+Stack* createStack() {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->top = NULL;
+    return stack;
+}
+
+// Função para verificar se a pilha está vazia
+int isEmpty(Stack* stack) {
+    return stack->top == NULL;
+}
+
+// Função para empilhar um elemento na pilha
+void push(Stack* stack, int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = stack->top;
+    stack->top = newNode;
+}
+
+// Função para desempilhar um elemento da pilha
+void pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Erro: pilha vazia.\n");
+        return;
+    }
+    Node* temp = stack->top;
+    stack->top = stack->top->next;
+    free(temp);
+}
+
+// Função para obter o elemento do topo da pilha
+int top(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Erro: pilha vazia.\n");
+        return -1;
+    }
+    return stack->top->data;
+}
+
+// Função para imprimir uma pilha
+void printStack(Stack* stack, const char* pilhaNome) {
+    printf("Pilha %s: ", pilhaNome);
+    Node* current = stack->top;
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    srand(time(NULL));
+
+    Stack* pilha1 = createStack();
+    Stack* pilha2 = createStack();
+    Stack* pilha3 = createStack();
+
+    int numerosSorteados = 0;
+
+    while (numerosSorteados < 100 && !isEmpty(pilha1) && !isEmpty(pilha2) && !isEmpty(pilha3)) {
+        int numeroSorteado = rand() % 3 + 1; // Gera um número aleatório entre 1 e 3
+
+        if (numeroSorteado == 1) {
+            if (!isEmpty(pilha1)) {
+                int numeroPilha1 = top(pilha1);
+                pop(pilha1);
+                printf("Empilhando o numero %d na pilha 1\n", numeroPilha1);
+            }
+        } else if (numeroSorteado == 2) {
+            if (!isEmpty(pilha2)) {
+                int numeroPilha2 = top(pilha2);
+                pop(pilha2);
+                printf("Empilhando o numero %d na pilha 2\n", numeroPilha2);
+            }
+        } else if (numeroSorteado == 3) {
+            if (!isEmpty(pilha3)) {
+                int numeroPilha3 = top(pilha3);
+                pop(pilha3);
+                printf("Empilhando o numero %d na pilha 3\n", numeroPilha3);
+            }
+        }
+
+        numerosSorteados++;
+    }
+    printf("\n");
+
+    printStack(pilha1, "1");
+    printStack(pilha2, "2");
+    printStack(pilha3, "3");
+
+    // Verifica a condição de encerramento do programa
+    if (isEmpty(pilha1) || isEmpty(pilha2) || isEmpty(pilha3)) {
+        printf("O programa foi encerrado porque uma das pilhas ficou vazia.\n");
+    } else if (numerosSorteados == 100) {
+        printf("O programa foi encerrado porque foram sorteados 100 numeros.\n");
+    }
+
+    // Libera a memória alocada pelas pilhas
+    while (!isEmpty(pilha1)) {
+        pop(pilha1);
+    }
+    while (!isEmpty(pilha2)) {
+        pop(pilha2);
+    }
+    while (!isEmpty(pilha3)) {
+        pop(pilha3);
+    }
+    free(pilha1);
+    free(pilha2);
+    free(pilha3);
+
+    return 0;
+}
